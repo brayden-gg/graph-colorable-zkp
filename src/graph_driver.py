@@ -17,7 +17,7 @@ def get_ri():
 
 def hash_col_and_ri(col, ri):
     permuted_color = col.to_bytes(1, 'big')
-    return hashlib.sha256().hexdigest(ri + permuted_color), random_bits
+    return hashlib.sha256().hexdigest(ri + permuted_color)
 
     
     
