@@ -7,6 +7,7 @@ import argparse
 
 HOST = "localhost"
 PORT = 8080
+verbose = False
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # use socket.gethostname() instead of "localhost" to be visible to other machines
@@ -22,16 +23,17 @@ def verify_graph(graph, u=None, v=None):
 
     if u is None or v is None:
         u, v = secrets.choice(list(graph.edges))
-    print(u, v) # TODO: REMOVE THIS DEBUG
 
     # send u, v to server
     marshalled_challenge = pickle.dumps([u, v])
     s.send(marshalled_challenge)
-    print(f"Sent challenge {u}, {v} to server.")
+    if verbose:
+        print(f"Sent challenge {u}, {v} to server.")
 
     # receive pi(phi(u)), r_u, pi(phi(v)), r_v from server
     marshalled_response = s.recv(1024)
-    print("Received response from server.")
+    if verbose:
+        print("Received response from server.")
     response = pickle.loads(marshalled_response)
     col_u, col_v, r_u, r_v = response[0], response[1], response[2], response[3]
 
@@ -54,10 +56,14 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--ntrials', required=False, type=int)
     parser.add_argument('-u','--u', required=False, type=int)
     parser.add_argument('-v', '--v', required=False, type=int)
+    parser.add_argument('-y', '--verbose', required=False, choices=["true", "false"])
 
     args = parser.parse_args()
 
     graph = example_graphs.graphs[args.graph]
+
+    if args.verbose == "true":
+        verbose = True
 
     if args.ntrials is not None:
         verified = True

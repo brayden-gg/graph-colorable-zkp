@@ -1,5 +1,6 @@
 import networkx as nx
 from matplotlib import pyplot as plt
+from graph_driver import valid_coloring
 
 cols = ["blue", "red", "green"]
 
@@ -15,9 +16,13 @@ petersen_col = [0, 1, 1, 2, 2, 1, 0, 2, 1, 0]
 petersen_col_cheat = [0, 1, 1, 2, 0, 1, 1, 2, 2, 2]
 
 graphs = {"k3": k3, "petersen": petersen}
-colorings = {"k3": {"True": k3_col, "False": k3_col_cheat}, "petersen": {"True": petersen_col, "False": petersen_col_cheat}}
+colorings = {"k3": {"honest": k3_col, "cheat": k3_col_cheat}, "petersen": {"honest": petersen_col, "cheat": petersen_col_cheat}}
 available_graphs = list(graphs.keys())
-    
-# assert valid_coloring(k3, k3_col)
-# assert valid_coloring(petersen, petersen_col)
+
+# tests
+if __name__ == "__main__":
+    assert valid_coloring(k3, k3_col)
+    assert not valid_coloring(k3, k3_col_cheat)
+    assert valid_coloring(petersen, petersen_col)
+    assert not valid_coloring(petersen, petersen_col_cheat)
 

@@ -8,6 +8,7 @@ import argparse
 
 HOST = "localhost"
 PORT = 8080
+verbose = False
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind((HOST, PORT))
@@ -21,7 +22,8 @@ def handle_connection(clientsocket, address):
     # send c to client
     marshalled = pickle.dumps(c)
     clientsocket.send(marshalled)
-    print("Sent coloring to client.")
+    if verbose:
+        print("Sent coloring to client.")
 
     # receive challenge, (u, v) from client
     u, v = -1, -1 # dummy values
@@ -33,7 +35,8 @@ def handle_connection(clientsocket, address):
     
     recv_pair = pickle.loads(marshalled_pair)
     u, v = recv_pair[0], recv_pair[1]
-    print(f"Received challenge {u}, {v}.")
+    if verbose:
+        print(f"Received challenge {u}, {v}.")
 
     # response to challenge
     u_col, v_col = perm[coloring[u]], perm[coloring[v]]
@@ -42,7 +45,8 @@ def handle_connection(clientsocket, address):
     # send response to client
     response = pickle.dumps([u_col, v_col, r_u, r_v])
     clientsocket.send(response)
-    print(f"Sent response to client.")
+    if verbose:
+        print(f"Sent response to client.")
 
     return True
 
@@ -52,16 +56,18 @@ if __name__ == "__main__":
                     prog='Prover',
                     description='Proves to the challenger that they know a valid coloring')
     parser.add_argument('graph', choices=example_graphs.available_graphs)
-    parser.add_argument('honest', choices=["True", "False"])
-    parser.add_argument('-s', '--show', required=False, choices=["True", "False"])
+    parser.add_argument('honest', choices=["honest", "cheat"])
+    parser.add_argument('-s', '--show', required=False, choices=["true", "false"])
+    parser.add_argument('-y', '--verbose', required=False, choices=["true", "false"])
     args = parser.parse_args()
 
     graph = example_graphs.graphs[args.graph]
     coloring = example_graphs.colorings[args.graph][args.honest]
-    print(args.honest)
-    print(coloring)
-    if args.show == "True":
+
+    if args.show == "true":
         graph_driver.show_graph(graph, coloring)
+    if args.verbose == "true":
+        verbose = True
 
     (clientsocket, address) = serversocket.accept()
     print(f"Connected with {address} :)")
