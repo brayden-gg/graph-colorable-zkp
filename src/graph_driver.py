@@ -1,6 +1,7 @@
 import networkx as nx
 import hashlib
 import secrets
+from matplotlib import pyplot as plt
 
 import constants
 
@@ -18,6 +19,11 @@ def get_ri():
 def hash_col_and_ri(col, ri):
     permuted_color = col.to_bytes(1, 'big')
     return hashlib.sha256().hexdigest(ri + permuted_color)
+
+def show_graph(graph, coloring):
+    cols = ["blue", "red", "green"]
+    nx.draw(graph, node_color=[cols[i] for i in coloring])
+    plt.show()
 
     
     

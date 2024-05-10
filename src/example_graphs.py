@@ -21,6 +21,8 @@ def valid_coloring(graph, coloring):
             return False
     return True
 
+if __name__ == "__main__":
+    
 # assert valid_coloring(k3, k3_col)
 # assert valid_coloring(petersen, petersen_col)
 
