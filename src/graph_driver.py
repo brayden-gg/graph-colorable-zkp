@@ -7,10 +7,12 @@ import constants
 
 def get_permutation(n): # probably overkill but maybe more secure?
     lst = list(range(n))
+    sz = n
     perm = []
-    while lst != []:
-        rand_elt = lst.pop(secrets.choice(lst))
+    while sz > 0:
+        rand_elt = lst.pop(secrets.choice(list(range(sz))))
         perm.append(rand_elt)
+        sz -= 1
     return perm
 
 def get_ri():
@@ -18,7 +20,8 @@ def get_ri():
 
 def hash_col_and_ri(col, ri):
     permuted_color = col.to_bytes(1, 'big')
-    return hashlib.sha256().hexdigest(ri + permuted_color)
+    # return hashlib.sha256().hexdigest(ri + permuted_color)
+    return hashlib.sha256(ri + permuted_color).hexdigest()
 
 def show_graph(graph, coloring):
     cols = ["blue", "red", "green"]
