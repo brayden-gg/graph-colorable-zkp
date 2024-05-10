@@ -25,5 +25,11 @@ def show_graph(graph, coloring):
     nx.draw(graph, node_color=[cols[i] for i in coloring])
     plt.show()
 
+def valid_coloring(graph, coloring):
+    for (u, v) in graph.edges:
+        if coloring[u] == coloring[v]:
+            return False
+    return True
+
     
     

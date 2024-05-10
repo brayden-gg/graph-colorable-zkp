@@ -14,14 +14,6 @@ petersen_col = [0, 1, 1, 2, 2, 1, 0, 2, 1, 0]
 
 graphs = [k3, petersen]
 colorings = [k3_col, petersen_col]
-
-def valid_coloring(graph, coloring):
-    for (u, v) in graph.edges:
-        if coloring[u] == coloring[v]:
-            return False
-    return True
-
-if __name__ == "__main__":
     
 # assert valid_coloring(k3, k3_col)
 # assert valid_coloring(petersen, petersen_col)
