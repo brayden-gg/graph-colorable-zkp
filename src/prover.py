@@ -4,18 +4,15 @@ import networkx as nx
 import example_graphs
 import graph_driver
 import pickle
+import argparse
 
 HOST = "localhost"
 PORT = 8080
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# use socket.gethostname() instead of "localhost" to be visible to other machines
 serversocket.bind((HOST, PORT))
 serversocket.listen(5)
 
-graph = example_graphs.graphs[0]
-coloring = example_graphs.colorings[0]
-graph_driver.show_graph(graph, coloring)
 def handle_connection(clientsocket, address):
     perm = graph_driver.get_permutation(3)
     r = [graph_driver.get_ri() for _ in coloring]
@@ -32,8 +29,8 @@ def handle_connection(clientsocket, address):
     try:
         marshalled_pair = clientsocket.recv(1024) # 1024 is prolly overkill
     except:
-        print("rah")
         return False
+    
     recv_pair = pickle.loads(marshalled_pair)
     u, v = recv_pair[0], recv_pair[1]
     print(f"Received challenge {u}, {v}.")
@@ -44,23 +41,34 @@ def handle_connection(clientsocket, address):
     
     # send response to client
     response = pickle.dumps([u_col, v_col, r_u, r_v])
-    # response = pickle.dumps([0, 0, 0, 0])
     clientsocket.send(response)
     print(f"Sent response to client.")
 
     return True
 
-(clientsocket, address) = serversocket.accept()
-print(f"Connected with {address} :)")
-while True:
-    # accept connections from outside
-    # (clientsocket, address) = serversocket.accept()
-    # print(f"Connected with {address} :)")
-    lol = handle_connection(clientsocket, address)
-    # thd = threading.Thread(target=handle_connection, args=(clientsocket, address))
-    # thd.run()
-    if not lol:
-        break
-print("Client closed... bye bye!")
-clientsocket.close()
-serversocket.close()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+                    prog='Prover',
+                    description='Proves to the challenger that they know a valid coloring')
+    parser.add_argument('graph', choices=example_graphs.available_graphs)
+    parser.add_argument('honest', choices=["True", "False"])
+    parser.add_argument('-s', '--show', required=False, choices=["True", "False"])
+    args = parser.parse_args()
+
+    graph = example_graphs.graphs[args.graph]
+    coloring = example_graphs.colorings[args.graph][args.honest]
+    print(args.honest)
+    print(coloring)
+    if args.show == "True":
+        graph_driver.show_graph(graph, coloring)
+
+    (clientsocket, address) = serversocket.accept()
+    print(f"Connected with {address} :)")
+    while True:
+        success = handle_connection(clientsocket, address)
+        if not success:
+            break
+    print("Client closed... bye bye!")
+    clientsocket.close()
+    serversocket.close()

@@ -20,7 +20,6 @@ def get_ri():
 
 def hash_col_and_ri(col, ri):
     permuted_color = col.to_bytes(1, 'big')
-    # return hashlib.sha256().hexdigest(ri + permuted_color)
     return hashlib.sha256(ri + permuted_color).hexdigest()
 
 def show_graph(graph, coloring):
