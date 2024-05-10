@@ -13,9 +13,9 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.bind((HOST, PORT))
 serversocket.listen(5)
 
-graph = example_graphs.graphs[1]
-coloring = example_graphs.colorings[1]
-
+graph = example_graphs.graphs[0]
+coloring = example_graphs.colorings[0]
+graph_driver.show_graph(graph, coloring)
 def handle_connection(clientsocket, address):
     perm = graph_driver.get_permutation(3)
     r = [graph_driver.get_ri() for _ in coloring]
@@ -28,7 +28,12 @@ def handle_connection(clientsocket, address):
 
     # receive challenge, (u, v) from client
     u, v = -1, -1 # dummy values
-    marshalled_pair = clientsocket.recv(1024) # 1024 is prolly overkill
+    marshalled_pair = []
+    try:
+        marshalled_pair = clientsocket.recv(1024) # 1024 is prolly overkill
+    except:
+        print("rah")
+        return False
     recv_pair = pickle.loads(marshalled_pair)
     u, v = recv_pair[0], recv_pair[1]
     print(f"Received challenge {u}, {v}.")
@@ -43,13 +48,19 @@ def handle_connection(clientsocket, address):
     clientsocket.send(response)
     print(f"Sent response to client.")
 
+    return True
+
 (clientsocket, address) = serversocket.accept()
 print(f"Connected with {address} :)")
 while True:
     # accept connections from outside
     # (clientsocket, address) = serversocket.accept()
     # print(f"Connected with {address} :)")
-    handle_connection(clientsocket, address)
+    lol = handle_connection(clientsocket, address)
     # thd = threading.Thread(target=handle_connection, args=(clientsocket, address))
     # thd.run()
-
+    if not lol:
+        break
+print("Client closed... bye bye!")
+clientsocket.close()
+serversocket.close()

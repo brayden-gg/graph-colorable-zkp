@@ -12,7 +12,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
 print("Connected to server!")
 
-graph = example_graphs.graphs[1] # choose graph... can automate this later
+graph = example_graphs.graphs[0] # choose graph... can automate this later
 
 def verify_graph(graph):
     # receive color from server
@@ -52,9 +52,10 @@ for i in range(ntrials):
     if not verify_graph(graph):
         verified = False
         break
-
 if verified:
     print(f"Verified coloring after {ntrials} trials :)")
 else:
     print(f"Failed to verify given coloring >:(")
 
+s.close()
+print("Closed connection: bye bye!")
